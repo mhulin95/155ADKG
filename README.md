@@ -1,2 +1,2 @@
 # 155ADKG
-Algoritmy digitální kartografie a GIS
+Repozitáž pro práci v předmětu Algoritmy digitální kartografie a GIS magisterského studia oboru geomatika.
