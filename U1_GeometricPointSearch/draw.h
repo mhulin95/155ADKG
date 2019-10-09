@@ -11,7 +11,7 @@ class Draw : public QWidget
 
 private:
     bool draw_mode;
-    std::vector<QPoint> points;
+    std::vector<QPoint> polygon;
     QPoint q;
 
 public:
@@ -19,9 +19,13 @@ public:
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *e);
     void clearPoints();
+    void importPolygon();
     void setDrawMode(){draw_mode = !draw_mode;}
-    void removeLastPoints();
-    void import_polygons(char polygonFilePath,std::fstream polygonFileName);
+    QPoint getPoint(){return q;}
+    std::vector<QPoint> getPolygon(){return polygon;}
+
+
+
 
 signals:
 
