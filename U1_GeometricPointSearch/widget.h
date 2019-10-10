@@ -16,13 +16,13 @@ public:
     ~Widget();
 
 private slots:
-    void clearButton_clicked();
+    void on_clearButton_clicked();
 
-    void drawModeButton_clicked();
+    void on_drawModeButton_clicked();
 
-    void analyzeButton_clicked();
+    void on_analyzeButton_clicked();
 
-    void importPolygonButton_clicked();
+    void on_importPolygonButton_clicked();
 
 private:
     Ui::Widget *ui;

@@ -17,18 +17,18 @@ Widget::~Widget()
 }
 
 
-void Widget::clearButton_clicked()
+void Widget::on_clearButton_clicked()
 {
     ui->Canvas->clearCanvas();
     ui->label->clear();
 }
 
-void Widget::drawModeButton_clicked()
+void Widget::on_drawModeButton_clicked()
 {
     ui->Canvas->setDrawMode();
 }
 
-void Widget::analyzeButton_clicked()
+void Widget::on_analyzeButton_clicked()
 {
     //Analyze point and polygon position
     QPoint q = ui->Canvas->getPoint();
@@ -48,7 +48,7 @@ void Widget::analyzeButton_clicked()
         ui->label->setText("Outside");
 }
 
-void Widget::importPolygonButton_clicked()
+void Widget::on_importPolygonButton_clicked()
 {
     //Select text file with polygons coordinates
     QString source_file = QFileDialog::getOpenFileName(this, "Select text file with the polygons", "C://", "Text file (*.txt)");
