@@ -17,22 +17,22 @@ Widget::~Widget()
 }
 
 
-void Widget::on_pushButton_2_clicked()
+void Widget::clearButton_clicked()
 {
-    ui->Canvas->clearPoints();
+    ui->Canvas->clearCanvas();
     ui->label->clear();
 }
 
-void Widget::on_pushButton_3_clicked()
+void Widget::drawModeButton_clicked()
 {
     ui->Canvas->setDrawMode();
 }
 
-void Widget::on_pushButton_4_clicked()
+void Widget::analyzeButton_clicked()
 {
     //Analyze point and polygon position
     QPoint q = ui->Canvas->getPoint();
-    std::vector<QPoint> polygon = ui->Canvas->getPolygon();
+    std::vector<QPoint> polygon = ui->Canvas->getPolygon(0);
 
     //Select method
     int res = 0;
@@ -48,8 +48,14 @@ void Widget::on_pushButton_4_clicked()
         ui->label->setText("Outside");
 }
 
-void Widget::on_pushButton_import_polygon_clicked()
+void Widget::importPolygonButton_clicked()
 {
-    ui->Canvas->importPolygon();
+    //Select text file with polygons coordinates
+    QString source_file = QFileDialog::getOpenFileName(this, "Select text file with the polygons", "C://", "Text file (*.txt)");
 
+    //Convert path from QString to string
+    std::string source_file_std = source_file.toStdString();
+
+    //Load polygons
+    ui->Canvas->importPolygon(source_file_std);
 }

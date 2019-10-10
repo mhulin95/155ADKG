@@ -1,8 +1,4 @@
 #include "draw.h"
-
-#include <QFileDialog>
-#include <QFile>
-#include <QTextStream>
 #include <QMessageBox>
 
 Draw::Draw(QWidget *parent) : QWidget(parent)
@@ -21,80 +17,113 @@ void Draw::mousePressEvent(QMouseEvent *e)
     int x = e->x();
     int y = e->y();
 
-    //Add points to polygon
-    if (draw_mode)
-    {
-        //Create new point
-        QPoint p(x,y);
+    //Set the coordinates to point q
+    q.setX(x);
+    q.setY(y);
 
-        //Add point to the list
-        polygon.push_back(p);
-    }
-
-    //Set coordinate of q
-    else {
-       q.setX(x);
-       q.setY(y);
-    }
     repaint();
 }
 
 void Draw::paintEvent(QPaintEvent *e)
 {
-    QPainter qp(this);
-    qp.begin(this);
-    int r = 5;
-    int r2 = 10;
+    QPainter painter(this);
+
+    //Set pen style for polygon boundary drawing
+    QPen pen_boun(Qt::black, 1,Qt::SolidLine);
+    painter.setPen(pen_boun);
+
+    //Draw polygons from file
+    for(int i = 0; i < polygons.size();i++)
+    {
+        //Create polygon
+        QPolygon p_draw;
+
+        //Get polygons one by one from file
+        std::vector<QPoint> actual_pol = polygons[i];
+
+        //Add points to the polygon
+        for(int j = 0; j < actual_pol.size(); j++)
+        {
+            p_draw.append(actual_pol[j]);
+        }
+
+        //Draw actual polygon
+        painter.drawPolygon(p_draw);
+    }
+
+    //Set point size (radius)
+    int r_q = 10;
 
     //Draw point Q
-    qp.drawEllipse(q.x() - r2/2,q.y() - r2/2, r2, r2);
+    painter.setPen(pen_boun);
+    painter.drawEllipse(q.x() - r_q/2,q.y() - r_q/2, r_q, r_q);
 
-    //Draw all points
-    for (int i = 0; i < polygon.size(); i++)
-    {
-        qp.drawEllipse(polygon[i].x() - r/2,polygon[i].y() - r/2, r, r);
-    }
-
-    //Draw  polygon
-    QPolygon qpoly;
-    for(int i = 0;i < polygon.size(); i++)
-    {
-        qpoly.append(polygon[i]);
-    }
-
-    qp.drawPolygon(qpoly);
-
-
-    qp.end();
 }
 
-void Draw::clearPoints()
+void Draw::clearCanvas()
 {
-      polygon.clear();
+      polygons.clear();
+
+      //Hide point Q
       q.setX(-100);
       q.setY(-100);
+
       repaint();
 }
 
-void Draw::importPolygon()
+void Draw::importPolygon(std::string path)
 {
-    // Select text file with polygons coordinates
-    QFile file(QFileDialog::getOpenFileName(this, "Select text file with the polygons", "C://", "Text file (*.txt)"));
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-/*
+    //Open the file
+    std::ifstream source_file;
+    source_file.open(path);
+
     //Check if the file is opened
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        QMessageBox::warning(this, "Error", "File can not be open");
-     !!! Doesn´t work as expected, shows fault in correct case
-*/
+    if(!source_file.is_open())
+    {
+        source_file.close();
+        QMessageBox::warning(this, "Error", "File can NOT be opened");
+    }
 
-    //Display content of the text file
-    QTextStream stream(&file);
-    QString text = stream.readAll();
-    QMessageBox box;
-    box.setText(text);
-    box.exec();
+    //Get the number of polygons in text file
+    int polygons_count;
+    source_file >> polygons_count;
 
-    file.close();
+    QMessageBox::information(this, "Test information", QString("Show the number of polygons %1").arg(polygons_count));
 
+    //Number of points in the polygon
+    int points_count;
+
+    //Vector for single polygon points
+    std::vector<QPoint> single_polygon; //QPointF for floating point accuracy?
+
+    //Go through whole file and store all polygons to variable polygon
+    while(source_file.good() && polygons_count--)
+    {
+        //Get number of points in one polygon
+        source_file >> points_count;
+
+        //Go through all points in single polygon and store them in variable single_polygon
+        while(points_count--)
+        {
+            QPoint single_point; //QPointF for floating point accuracy?
+            double point_x, point_y;
+            source_file >> point_x;
+            source_file >> point_y;
+            single_point.setX(point_x);
+            single_point.setY(point_y);
+            single_polygon.push_back(single_point);
+        }
+
+        polygons.push_back(single_polygon);
+        single_polygon.clear();
+
+    }
+
+    source_file.close();
+
+}
+
+std::vector<QPoint> Draw::getPolygon(int index)
+{
+    return polygons[index];
 }

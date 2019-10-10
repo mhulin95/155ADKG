@@ -1,0 +1,6 @@
+﻿#ignore user´s files
+*pro.user
+
+#build files
+build*
+

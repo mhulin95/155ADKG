@@ -124,10 +124,3 @@ int Algorithms::positionPointPolygonRayCrossing(QPoint &q, std::vector<QPoint> &
     //Odd/even amount of intersections
     return k%2;
 }
-
-
-
-
-
-
-
